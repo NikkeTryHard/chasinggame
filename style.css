@@ -1,0 +1,138 @@
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #000;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            cursor: none;
+        }
+        #gameCanvas {
+            display: block;
+        }
+        #ui {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: #0f0;
+            font-size: 18px;
+            text-shadow: 2px 2px 4px #000;
+            z-index: 100;
+        }
+        #crosshair {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            z-index: 100;
+            pointer-events: none;
+        }
+        #crosshair::before, #crosshair::after {
+            content: '';
+            position: absolute;
+            background: rgba(255,255,255,0.8);
+        }
+        #crosshair::before {
+            width: 2px;
+            height: 20px;
+            left: 9px;
+        }
+        #crosshair::after {
+            width: 20px;
+            height: 2px;
+            top: 9px;
+        }
+        #deathScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(139, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 200;
+        }
+        #deathScreen h1 {
+            color: #fff;
+            font-size: 72px;
+            text-shadow: 0 0 20px #f00;
+            animation: pulse 0.5s infinite;
+        }
+        #deathScreen p {
+            color: #fff;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        #startScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, #1a0a0a, #000);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 200;
+        }
+        #startScreen h1 {
+            color: #f00;
+            font-size: 64px;
+            text-shadow: 0 0 30px #f00;
+            margin-bottom: 20px;
+        }
+        #startScreen p {
+            color: #aaa;
+            font-size: 18px;
+            margin: 5px;
+        }
+        #startScreen button {
+            margin-top: 30px;
+            padding: 15px 40px;
+            font-size: 24px;
+            background: #8b0000;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+        }
+        #startScreen button:hover {
+            background: #f00;
+            box-shadow: 0 0 20px #f00;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        #stamina {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 200px;
+            height: 20px;
+            background: #333;
+            border: 2px solid #0f0;
+            z-index: 100;
+        }
+        #staminaBar {
+            height: 100%;
+            background: #0f0;
+            transition: width 0.1s;
+        }
+        #warning {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #f00;
+            font-size: 36px;
+            text-shadow: 0 0 20px #f00;
+            opacity: 0;
+            z-index: 100;
+            pointer-events: none;
+        }
