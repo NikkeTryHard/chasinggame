@@ -1,5 +1,8 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+
+        const bossImage = new Image();
+        bossImage.src = 'asset/boss.png';
         
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -57,6 +60,7 @@
         let gameOver = false;
         let startTime = 0;
         let gunBob = 0;
+        let difficulty = 'normal';
         
         // Depth buffer for sprite occlusion
         let depthBuffer = [];
@@ -145,9 +149,18 @@
         });
         
         function startGame() {
+            difficulty = document.getElementById('difficulty').value;
             document.getElementById('startScreen').style.display = 'none';
             gameStarted = true;
             startTime = Date.now();
+            
+            // Set initial speed based on difficulty
+            if (difficulty === 'easy') enemy.baseSpeed = 0.025;
+            else if (difficulty === 'normal') enemy.baseSpeed = 0.045; // Slightly faster than original 0.035
+            else if (difficulty === 'hard') enemy.baseSpeed = 0.065;
+            
+            enemy.speed = enemy.baseSpeed;
+            
             enemy.path = findPath(enemy.x, enemy.y, player.x, player.y);
             canvas.requestPointerLock();
             requestAnimationFrame(gameLoop);
@@ -165,11 +178,18 @@
                 isSprinting: false,
                 isOnGround: true
             };
+            
+            // Reset enemy with correct speed for current difficulty
+            let initialSpeed = 0.045;
+            if (difficulty === 'easy') initialSpeed = 0.025;
+            else if (difficulty === 'normal') initialSpeed = 0.045;
+            else if (difficulty === 'hard') initialSpeed = 0.065;
+
             enemy = {
                 x: 18.5,
                 y: 9.5,
-                speed: 0.035,
-                baseSpeed: 0.035,
+                speed: initialSpeed,
+                baseSpeed: initialSpeed,
                 path: [],
                 pathUpdateTimer: 0
             };
@@ -287,9 +307,17 @@
             // Check if caught player
             if (dist < 0.6) {
                 gameOver = true;
-                document.getElementById('deathScreen').style.display = 'flex';
-                document.getElementById('finalTime').textContent = Math.floor((Date.now() - startTime) / 1000);
                 document.exitPointerLock();
+                
+                // Jumpscare
+                const jumpscare = document.getElementById('jumpscare');
+                jumpscare.style.display = 'block';
+                
+                setTimeout(() => {
+                    jumpscare.style.display = 'none';
+                    document.getElementById('deathScreen').style.display = 'flex';
+                    document.getElementById('finalTime').textContent = Math.floor((Date.now() - startTime) / 1000);
+                }, 300); // 300ms jumpscare
             }
             
             // Warning when close
@@ -445,52 +473,18 @@
             
             // Calculate enemy size based on distance
             const enemyHeight = (canvas.height / dist) * 1.2;
-            const enemyWidth = enemyHeight * 0.5;
+            
+            // Calculate width based on aspect ratio if image is loaded
+            let enemyWidth = enemyHeight * 0.5; // Default fallback
+            if (bossImage.complete && bossImage.width > 0 && bossImage.height > 0) {
+                enemyWidth = enemyHeight * (bossImage.width / bossImage.height);
+            }
+            
             const enemyY = canvas.height / 2 - enemyHeight / 2 + pitchOffset;
             
-            // Draw shadow
-            ctx.fillStyle = 'rgba(0,0,0,0.6)';
-            ctx.beginPath();
-            ctx.ellipse(screenX, canvas.height / 2 + enemyHeight / 2 + pitchOffset, enemyWidth / 2, enemyHeight / 10, 0, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Draw body - tall dark figure
-            ctx.fillStyle = '#080808';
-            ctx.fillRect(screenX - enemyWidth / 2, enemyY + enemyHeight * 0.3, enemyWidth, enemyHeight * 0.7);
-            
-            // Draw head
-            const headRadius = enemyWidth * 0.4;
-            const pulse = Math.sin(Date.now() / 80) * headRadius * 0.1;
-            ctx.beginPath();
-            ctx.arc(screenX, enemyY + enemyHeight * 0.25, headRadius + pulse, 0, Math.PI * 2);
-            ctx.fillStyle = '#101010';
-            ctx.fill();
-            
-            // Draw glowing eyes
-            const eyeGlow = Math.abs(Math.sin(Date.now() / 150));
-            const eyeSize = headRadius * 0.3;
-            const eyeY = enemyY + enemyHeight * 0.22;
-            const eyeSpacing = headRadius * 0.5;
-            
-            ctx.shadowColor = '#ff0000';
-            ctx.shadowBlur = 15 + eyeGlow * 15;
-            ctx.fillStyle = `rgb(255, ${Math.floor(50 + eyeGlow * 100)}, 0)`;
-            
-            ctx.beginPath();
-            ctx.arc(screenX - eyeSpacing, eyeY, eyeSize, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.beginPath();
-            ctx.arc(screenX + eyeSpacing, eyeY, eyeSize, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.shadowBlur = 0;
-            
-            // Draw creepy mouth
-            ctx.strokeStyle = '#300';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.arc(screenX, enemyY + enemyHeight * 0.35, headRadius * 0.4, 0.2 * Math.PI, 0.8 * Math.PI);
-            ctx.stroke();
+            if (bossImage.complete) {
+                ctx.drawImage(bossImage, screenX - enemyWidth / 2, enemyY, enemyWidth, enemyHeight);
+            }
         }
         
         function drawGun() {

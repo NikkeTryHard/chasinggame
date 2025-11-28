@@ -12,9 +12,20 @@
         <p>WASD - Move | SHIFT - Sprint | SPACE - Jump</p>
         <p>Mouse - Look Around</p>
         <p>Escape the maze... IT is coming for you!</p>
+        
+        <div style="margin: 20px 0;">
+            <label for="difficulty" style="color: #aaa; font-size: 18px; margin-right: 10px;">DIFFICULTY:</label>
+            <select id="difficulty" style="padding: 5px 10px; font-size: 16px; background: #333; color: #fff; border: 1px solid #f00; font-family: 'Courier New', monospace;">
+                <option value="easy">EASY</option>
+                <option value="normal" selected>NORMAL</option>
+                <option value="hard">HARD</option>
+            </select>
+        </div>
+
         <button onclick="startGame()">ENTER THE MAZE</button>
     </div>
     
+    <div id="jumpscare"></div>
     <canvas id="gameCanvas"></canvas>
     <div id="crosshair"></div>
     <div id="ui">
